@@ -11,8 +11,36 @@ $("#login").click(function(){
 
 			$("#name").html(user.name);
 
-			return fetch('https://jsonplaceholder.typicode.com/posts?userId=' + user.id);
+			var userPosts = fetch('https://jsonplaceholder.typicode.com/posts?userId=' + user.id);
+			var userAlbums = fetch('https://jsonplaceholder.typicode.com/albums?userId=' + user.id);
+
+			return Promise.all([userPosts, userAlbums]);
 		})
+		.then(function(results){
+			var posts = results[0];
+			var albums = results[1];
+
+			posts.forEach(function(post){
+				var li = $('<li></li>');
+				li.text(post.title);
+				$("#posts").append(li);
+			})
+
+		.then(function(albums){
+			albums.forEach(function(album){
+				var li = $('<li></li>');
+				li.text(album.title);
+				$('#albums').append(li);
+			})
+		})
+		.catch(function(error){
+			alert(error);
+		})
+
+
+		})
+
+
 		.then(function(response){
 			return response.json();
 		})
